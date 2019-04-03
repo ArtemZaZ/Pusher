@@ -8,10 +8,11 @@
 
 #define SEND_DELAY  400  // время задержки отправки данных
 #define PUSH_BYTE   0x3C  // байт от которого будут толкаться кубики
+#define SERVO_PUSH_DELAY  1000  // время задержки сервы при толчке
 
 #define VOLTAGE   5
 
-Servo servo;  // экземпляр сервы
+Servo mservo;  // экземпляр сервы
 
 void distanceSensorInit()   // инициализация датчика расстояния
 {
@@ -30,19 +31,16 @@ uint8_t distanceSensorGetData()
 
 void push()   // отталкиваем кубик
 {
-  Serial.println(' ');
-  Serial.println("push!!!");    // для отладки
-  Serial.println(' ');
-  servo.write(90);  // 90 градусов
-  delay(500);   // задержка
-  servo.write(0);  // 0 градусов  
+  mservo.write(180);  // 180 градусов
+  delay(SERVO_PUSH_DELAY);   // задержка
+  mservo.write(0);  // 0 градусов  
 }
 
 void setup() 
 {
-  servo.attach(SERVO_CH);  // привязка к 9 выводу
+  mservo.attach(SERVO_CH, 800, 2200);  // привязка к выводу
   distanceSensorInit();   // инициализация датчика расстояния
-  servo.write(0); // ноль градусов
+  mservo.write(0); // ноль градусов
   Serial.begin(9600); // инициализация уарта
 }
 
