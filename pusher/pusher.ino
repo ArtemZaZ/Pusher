@@ -6,9 +6,9 @@
 #define SERVO_CH    9 // канал сервы
 #define DIST_SENSOR_CH  A0  // канал датчика дистанции
 
-#define SEND_DELAY  400  // время задержки отправки данных
-#define PUSH_BYTE   0x3C  // байт от которого будут толкаться кубики
-#define SERVO_PUSH_DELAY  1000  // время задержки сервы при толчке
+#define SEND_DELAY  500  // время задержки отправки данных
+#define PUSH_BYTE   0xAA  // байт от которого будут толкаться кубики
+#define SERVO_PUSH_DELAY  800  // время задержки сервы при толчке
 
 #define VOLTAGE   5
 
@@ -21,24 +21,34 @@ void distanceSensorInit()   // инициализация датчика рас�
 
 uint8_t distanceSensorGetData()
 {
-  static uint8_t result;  
+  static uint8_t result;
+  static float temp;  // вспомогательная переменная  
   result = 0xFF;  // при каждом запуске ф-ии выставляем максимальную дистанцию
   #ifdef SHARP
-    result = (uint8_t)(29.988f * pow(((float)analogRead(DIST_SENSOR_CH)*VOLTAGE/1024.f), -1.173f)); // https://github.com/guillaume-rico/SharpIR
+    temp = 29.988f * pow(((float)analogRead(DIST_SENSOR_CH)*VOLTAGE/1024.f), -1.173f); // https://github.com/guillaume-rico/SharpIR
+    if (temp > 255)
+    {
+      result = 255;      
+    }
+    else
+    {
+      result = (uint8_t)temp;
+    }
   #endif
   return result;
 }
 
 void push()   // отталкиваем кубик
 {
-  mservo.write(180);  // 180 градусов
+  mservo.write(20);  // 20 градусов
   delay(SERVO_PUSH_DELAY);   // задержка
   mservo.write(0);  // 0 градусов  
+  delay(SERVO_PUSH_DELAY);   // задержка после выкидывания кубика
 }
 
 void setup() 
 {
-  mservo.attach(SERVO_CH, 800, 2200);  // привязка к выводу
+  mservo.attach(SERVO_CH, 830, 2200);  // привязка к выводу
   distanceSensorInit();   // инициализация датчика расстояния
   mservo.write(0); // ноль градусов
   Serial.begin(9600); // инициализация уарта
