@@ -59,7 +59,7 @@ void loop()
   static uint32_t lastSendTime = 0; // время последней отправки данных
   if(millis() - lastSendTime > SEND_DELAY)  // если время превышает порог задержки на отправку
   {
-    Serial.println(distanceSensorGetData());  // отправляем байт данных
+    Serial.write(distanceSensorGetData());  // отправляем байт данных
     lastSendTime = millis();
   }
   
